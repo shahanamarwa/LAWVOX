@@ -1,14 +1,16 @@
-# Next.js
-.next/
-out/
-build/
-dist/
-dist-ssr/
-
 # Dependencies
 node_modules/
 /.pnp
 .pnp.js
+
+# Testing
+/coverage
+
+# Next.js build output
+.next/
+out/
+build/
+dist/
 
 # Logs
 logs/
@@ -27,10 +29,18 @@ lerna-debug.log*
 .env.test.local
 .env.production.local
 
-# Editor directories and files
+# Databases and runtime data
+backend/data/*.db
+backend/data/*.db-journal
+backend/data/*.db-wal
+backend/data/*.db-shm
+*.sqlite
+*.db
+
+# Editor / IDE
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
@@ -38,5 +48,6 @@ lerna-debug.log*
 *.sln
 *.sw?
 
-# TypeScript cache
+# TypeScript build info
 *.tsbuildinfo
+next-env.d.ts.bak

@@ -1,0 +1,1 @@
+"""LAWVOX backend application package."""
