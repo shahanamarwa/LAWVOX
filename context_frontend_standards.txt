@@ -1,0 +1,37 @@
+Create the basic frontend structure for my LAWVOX application.
+
+LAWVOX is a Constitutional Precedent Research and Legal Audio Platform for lawyers, law students, and legal researchers.
+
+For now, DO NOT create all pages.
+
+First create only:
+
+1. A professional light-mode layout
+2. LAWVOX logo/name
+3. Left sidebar navigation
+4. Top header
+5. Main content area
+6. Responsive mobile navigation
+
+Sidebar items:
+
+- Dashboard
+- Search Cases
+- Library
+- Bookmarks
+- Listening History
+- My Notes
+- Profile
+- Settings
+- Logout
+
+Use Next.js, TypeScript and Tailwind CSS.
+
+Do NOT implement backend functionality yet.
+Use only frontend UI and placeholder content.
+
+Keep the design clean, professional and suitable for a legal application.
+
+Do NOT create the Dashboard, Search, Case Details, Audio Player, Library, Notes or other detailed pages yet.
+
+First focus only on the main application layout and navigation.
