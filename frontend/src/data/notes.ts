@@ -1,0 +1,48 @@
+import { ResearchNote } from '@/types';
+
+export const initialNotes: ResearchNote[] = [
+  {
+    id: 'note-1',
+    title: 'Basic Structure Doctrine limits on 42nd Amendment',
+    caseId: 'case-kesavananda',
+    caseTitle: 'Kesavananda Bharati v. State of Kerala',
+    chapterTitle: 'Chapter 5: Pronouncement of Basic Structure Doctrine',
+    timestamp: '10:45',
+    dateCreated: '28 Aug 2026',
+    content: 'Justice H.R. Khanna key judgment holds that Parliament can amend any provision of the Constitution under Article 368 but cannot damage or destroy the basic foundation and structure. Re-check Minerva Mills paragraphs on Article 368(4) & (5).',
+    tags: ['Basic Structure', 'Art 368', 'Constitutional Law'],
+  },
+  {
+    id: 'note-2',
+    title: 'Golden Triangle Interconnection (Arts 14, 19, 21)',
+    caseId: 'case-maneka',
+    caseTitle: 'Maneka Gandhi v. Union of India',
+    chapterTitle: 'Chapter 4: Interconnection of Articles 14, 19 and 21',
+    timestamp: '08:20',
+    dateCreated: '25 Aug 2026',
+    content: 'Justice Bhagwati held that Article 21 does not exclude Article 19. A law depriving personal liberty must stand the triple test of fairness: (1) Valid procedure, (2) Not arbitrary under Art 14, (3) Meet freedoms under Art 19.',
+    tags: ['Art 21', 'Due Process', 'Personal Liberty'],
+  },
+  {
+    id: 'note-3',
+    title: 'Proportionality Test for State Intrusion on Privacy',
+    caseId: 'case-puttaswamy',
+    caseTitle: 'Justice K.S. Puttaswamy v. Union of India',
+    chapterTitle: 'Chapter 4: The Proportionality Standard',
+    timestamp: '14:10',
+    dateCreated: '20 Aug 2026',
+    content: 'Three-pronged test: 1. Legitimate State Aim, 2. Rational Nexus / Suitability, 3. Necessity (least restrictive means), 4. Balancing of rights against state objective.',
+    tags: ['Privacy', 'Proportionality', 'Data Protection'],
+  },
+  {
+    id: 'note-4',
+    title: 'Section 66A IT Act - Discussion vs Incitement',
+    caseId: 'case-shreya',
+    caseTitle: 'Shreya Singhal v. Union of India',
+    chapterTitle: 'Chapter 2: Reasonable Restrictions under Article 19(2)',
+    timestamp: '05:30',
+    dateCreated: '15 Aug 2026',
+    content: 'Justice Nariman emphasized that mere discussion or advocacy of an unpopular cause cannot be restricted; only when advocacy reaches the level of incitement does Art 19(2) kick in.',
+    tags: ['Speech', 'Section 66A', 'Digital Rights'],
+  },
+];

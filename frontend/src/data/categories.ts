@@ -1,0 +1,58 @@
+import { LawCategory } from '@/types';
+
+export const mockCategories: LawCategory[] = [
+  {
+    id: 'cat-fundamental-rights',
+    name: 'Fundamental Rights',
+    slug: 'fundamental-rights',
+    description: 'Enforceable constitutional liberties under Part III (Articles 12–35).',
+    caseCount: 42,
+    iconName: 'Shield',
+    accentColor: 'from-amber-500/15 to-amber-500/5 text-amber-700 border-amber-200',
+  },
+  {
+    id: 'cat-constitutional-amendments',
+    name: 'Constitutional Amendments',
+    slug: 'constitutional-amendments',
+    description: 'Article 368 jurisprudence, Basic Structure doctrine, and parliamentary limits.',
+    caseCount: 28,
+    iconName: 'FileEdit',
+    accentColor: 'from-purple-500/15 to-purple-500/5 text-purple-700 border-purple-200',
+  },
+  {
+    id: 'cat-right-to-privacy',
+    name: 'Right to Privacy',
+    slug: 'right-to-privacy',
+    description: 'Informational privacy, bodily autonomy, data protection, and Article 21.',
+    caseCount: 19,
+    iconName: 'Lock',
+    accentColor: 'from-indigo-500/15 to-indigo-500/5 text-indigo-700 border-indigo-200',
+  },
+  {
+    id: 'cat-freedom-of-speech',
+    name: 'Freedom of Speech',
+    slug: 'freedom-of-speech',
+    description: 'Article 19(1)(a), digital expression, media freedom, and reasonable restrictions.',
+    caseCount: 34,
+    iconName: 'MessageSquare',
+    accentColor: 'from-blue-500/15 to-blue-500/5 text-blue-700 border-blue-200',
+  },
+  {
+    id: 'cat-equality',
+    name: 'Equality',
+    slug: 'equality',
+    description: 'Articles 14, 15, 16, non-discrimination, affirmative action, and gender justice.',
+    caseCount: 37,
+    iconName: 'Scale',
+    accentColor: 'from-emerald-500/15 to-emerald-500/5 text-emerald-700 border-emerald-200',
+  },
+  {
+    id: 'cat-judicial-review',
+    name: 'Judicial Review',
+    slug: 'judicial-review',
+    description: 'Articles 32, 226, constitutional supremacy, writ jurisdiction, and separation of powers.',
+    caseCount: 25,
+    iconName: 'Gavel',
+    accentColor: 'from-rose-500/15 to-rose-500/5 text-rose-700 border-rose-200',
+  },
+];
