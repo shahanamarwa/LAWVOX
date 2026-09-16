@@ -1,47 +1,41 @@
+// backend/src/utils/response.ts
+
 import { Response } from 'express';
 import { ApiResponse } from '../types';
 
-export class AppResponse {
-  static success<T>(res: Response, data: T, status: number = 200, message?: string): Response {
+/**
+ * Unified JSON response builder for all API endpoints
+ */
+export class ResponseBuilder {
+  static success<T>(res: Response, data: T, message: string = 'Success', statusCode: number = 200): Response {
     const payload: ApiResponse<T> = {
       success: true,
+      message,
       data,
+      status: statusCode,
     };
-    if (message) {
-      payload.message = message;
-    }
-    return res.status(status).json(payload);
+    return res.status(statusCode).json(payload);
   }
 
-  static created<T>(res: Response, data: T, message?: string): Response {
-    return this.success(res, data, 201, message);
-  }
-
-  static error(
-    res: Response,
-    message: string,
-    status: number = 500,
-    details?: unknown
-  ): Response {
+  static error(res: Response, error: string, statusCode: number = 400, message?: string): Response {
     const payload: ApiResponse = {
       success: false,
-      error: {
-        message,
-        ...(details ? { details } : {}),
-      },
+      message: message || error,
+      error,
+      status: statusCode,
     };
-    return res.status(status).json(payload);
-  }
-
-  static badRequest(res: Response, message: string = 'Bad request', details?: unknown): Response {
-    return this.error(res, message, 400, details);
+    return res.status(statusCode).json(payload);
   }
 
   static notFound(res: Response, message: string = 'Resource not found'): Response {
-    return this.error(res, message, 404);
+    return this.error(res, 'NOT_FOUND', 404, message);
   }
 
-  static conflict(res: Response, message: string = 'Resource conflict'): Response {
-    return this.error(res, message, 409);
+  static badRequest(res: Response, message: string = 'Bad request'): Response {
+    return this.error(res, 'BAD_REQUEST', 400, message);
+  }
+
+  static serverError(res: Response, message: string = 'Internal server error'): Response {
+    return this.error(res, 'INTERNAL_SERVER_ERROR', 500, message);
   }
 }
