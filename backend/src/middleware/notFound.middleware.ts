@@ -1,6 +1,8 @@
-import { Request, Response } from 'express';
-import { AppResponse } from '../utils/response';
+// backend/src/middleware/notFound.middleware.ts
 
-export function notFoundMiddleware(req: Request, res: Response): void {
-  AppResponse.notFound(res, `Route '${req.method} ${req.originalUrl}' not found`);
+import { Request, Response } from 'express';
+import { ResponseBuilder } from '../utils/response';
+
+export function notFoundMiddleware(req: Request, res: Response) {
+  ResponseBuilder.notFound(res, `Endpoint not found: ${req.method} ${req.path}`);
 }
