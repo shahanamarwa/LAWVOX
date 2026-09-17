@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.env
+*.log
+lawvox.db
+lawvox.db-shm
+lawvox.db-wal
