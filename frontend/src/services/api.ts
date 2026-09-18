@@ -80,4 +80,51 @@ export const LawvoxAPI = {
       `/cases/search?${query.toString()}`
     );
   },
+
+  // 4. Notes (Local Storage Implementation - Frontend Only)
+  // These methods store notes locally in the browser since the backend
+  // doesn't have a notes endpoint yet. When a notes API is added to the
+  // backend, replace these implementations with API calls.
+  async getNotes() {
+    try {
+      const stored = localStorage.getItem('lawvox_notes');
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      console.warn('[API] Error reading notes from localStorage:', error);
+      return [];
+    }
+  },
+
+  async createNote(note: {
+    title: string;
+    case_id: string;
+    content: string;
+  }) {
+    try {
+      const notes = (await this.getNotes()) || [];
+      const newNote = {
+        id: Math.max(...notes.map((n: any) => n.id || 0), 0) + 1,
+        ...note,
+        created_at: new Date().toISOString(),
+      };
+      notes.push(newNote);
+      localStorage.setItem('lawvox_notes', JSON.stringify(notes));
+      return newNote;
+    } catch (error) {
+      console.warn('[API] Error creating note:', error);
+      return null;
+    }
+  },
+
+  async deleteNote(id: number) {
+    try {
+      const notes = (await this.getNotes()) || [];
+      const filtered = notes.filter((n: any) => n.id !== id);
+      localStorage.setItem('lawvox_notes', JSON.stringify(filtered));
+      return true;
+    } catch (error) {
+      console.warn('[API] Error deleting note:', error);
+      return false;
+    }
+  },
 };
