@@ -5,6 +5,7 @@ import { X, Scale, Sparkles } from 'lucide-react';
 import { LawvoxLogo } from './LawvoxLogo';
 import { MAIN_NAV_ITEMS, SYSTEM_NAV_ITEMS, CURRENT_USER } from '../../data/navigation';
 import { NavItemId } from '../../types/navigation';
+import { AuthService } from '../../services/auth';
 
 interface MobileNavProps {
   isOpen: boolean;
@@ -194,19 +195,28 @@ export const MobileNav: React.FC<MobileNavProps> = ({
 
         {/* User Profile Footer */}
         <div className="p-4 border-t border-slate-100 bg-slate-50">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-slate-900 text-amber-400 flex items-center justify-center font-bold text-xs">
-              {CURRENT_USER.initials}
-            </div>
-            <div className="min-w-0 flex-1">
-              <h4 className="text-xs font-semibold text-slate-900 truncate">
-                {CURRENT_USER.name}
-              </h4>
-              <p className="text-[11px] text-slate-500 truncate">
-                {CURRENT_USER.barAffiliation}
-              </p>
-            </div>
-          </div>
+          {(() => {
+            const authUser = typeof window !== 'undefined' ? AuthService.getAuthUser() : null;
+            const displayName = authUser?.name || CURRENT_USER.name;
+            const displayInitials = authUser?.initials || (authUser?.name ? authUser.name.charAt(0).toUpperCase() : CURRENT_USER.initials);
+            const displayRole = authUser?.barAffiliation || authUser?.role || CURRENT_USER.barAffiliation;
+
+            return (
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-slate-900 text-amber-400 flex items-center justify-center font-bold text-xs">
+                  {displayInitials}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h4 className="text-xs font-semibold text-slate-900 truncate">
+                    {displayName}
+                  </h4>
+                  <p className="text-[11px] text-slate-500 truncate">
+                    {displayRole}
+                  </p>
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </div>
     </div>

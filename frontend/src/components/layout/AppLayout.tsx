@@ -19,6 +19,7 @@ import { CaseDetailsModal } from '../modals/CaseDetailsModal';
 import { NavItemId } from '../../types/navigation';
 import { PrecedentCase } from '../../types/dashboard';
 import { MAIN_NAV_ITEMS, SYSTEM_NAV_ITEMS } from '../../data/navigation';
+import { AuthService } from '../../services/auth';
 
 interface AppLayoutProps {
   children?: React.ReactNode;
@@ -28,12 +29,22 @@ const AppLayoutInner: React.FC<AppLayoutProps> = ({ children }) => {
   const pathname = usePathname();
   const router = useRouter();
   const { currentCase } = useAudioPlayer();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [activeItem, setActiveItem] = useState<NavItemId>('dashboard');
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [isCaseDetailsOpen, setIsCaseDetailsOpen] = useState(false);
   const [modalCase, setModalCase] = useState<PrecedentCase | null>(null);
 
   const allItems = [...MAIN_NAV_ITEMS, ...SYSTEM_NAV_ITEMS];
+
+  // Auth Guard: ensure user is authenticated, redirect to /login if not
+  useEffect(() => {
+    if (!AuthService.isAuthenticated()) {
+      router.replace('/login');
+    } else {
+      setIsAuthenticated(true);
+    }
+  }, [router, pathname]);
 
   // Sync active state from URL pathname
   useEffect(() => {
@@ -55,15 +66,21 @@ const AppLayoutInner: React.FC<AppLayoutProps> = ({ children }) => {
     } else if (cleanPath.includes('setting')) {
       setActiveItem('settings');
     } else if (cleanPath.includes('logout')) {
-      setActiveItem('logout');
+      AuthService.clearSession();
+      router.replace('/login');
     } else {
       setActiveItem('dashboard');
     }
-  }, [pathname]);
+  }, [pathname, router]);
 
   const currentItem = allItems.find((item) => item.id === activeItem) || allItems[0];
 
   const handleNavigate = (itemId: NavItemId) => {
+    if (itemId === 'logout') {
+      AuthService.clearSession();
+      router.replace('/login');
+      return;
+    }
     setActiveItem(itemId);
     const targetItem = allItems.find((item) => item.id === itemId);
     if (targetItem && router) {
@@ -102,6 +119,19 @@ const AppLayoutInner: React.FC<AppLayoutProps> = ({ children }) => {
         return <DashboardView />;
     }
   };
+
+  if (isAuthenticated !== true) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+          <span className="text-xs text-slate-400 font-medium tracking-wide">
+            Verifying Workspace Credentials...
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex font-sans antialiased selection:bg-purple-500/20 selection:text-purple-900 pb-20 sm:pb-16">

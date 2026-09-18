@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { CURRENT_USER } from '../../data/navigation';
 import { NavItemId } from '../../types/navigation';
+import { AuthService } from '../../services/auth';
 
 interface HeaderProps {
   activeItem: NavItemId;
@@ -161,17 +162,27 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* User Mini Profile */}
         <div className="flex items-center gap-2.5 pl-1">
-          <div className="w-8 h-8 rounded-full bg-slate-900 text-amber-300 flex items-center justify-center font-bold text-xs shadow-xs border border-slate-700">
-            {CURRENT_USER.initials}
-          </div>
-          <div className="hidden md:flex flex-col text-left">
-            <span className="text-xs font-bold text-slate-900 leading-tight">
-              {CURRENT_USER.name}
-            </span>
-            <span className="text-[10px] text-slate-500 leading-tight">
-              SCBA Member
-            </span>
-          </div>
+          {(() => {
+            const authUser = typeof window !== 'undefined' ? AuthService.getAuthUser() : null;
+            const displayName = authUser?.name || CURRENT_USER.name;
+            const displayInitials = authUser?.initials || (authUser?.name ? authUser.name.charAt(0).toUpperCase() : CURRENT_USER.initials);
+
+            return (
+              <>
+                <div className="w-8 h-8 rounded-full bg-slate-900 text-amber-300 flex items-center justify-center font-bold text-xs shadow-xs border border-slate-700">
+                  {displayInitials}
+                </div>
+                <div className="hidden md:flex flex-col text-left">
+                  <span className="text-xs font-bold text-slate-900 leading-tight">
+                    {displayName}
+                  </span>
+                  <span className="text-[10px] text-slate-500 leading-tight">
+                    SCBA Member
+                  </span>
+                </div>
+              </>
+            );
+          })()}
         </div>
       </div>
     </header>

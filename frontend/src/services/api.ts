@@ -3,6 +3,8 @@
  * Connects Next.js Frontend to the Express SQLite Backend.
  */
 
+import { AuthService } from './auth';
+
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -11,9 +13,13 @@ async function fetchJson<T>(
   options?: RequestInit
 ): Promise<T | null> {
   try {
+    const token = AuthService.getAuthToken();
+    const authHeader = token ? { Authorization: `Bearer ${token}` } : {};
+
     const res = await fetch(`${API_BASE_URL}${endpoint}`, {
       headers: {
         'Content-Type': 'application/json',
+        ...authHeader,
         ...(options?.headers || {}),
       },
       ...options,
@@ -48,6 +54,40 @@ async function fetchJson<T>(
 }
 
 export const LawvoxAPI = {
+  // 0. Authentication
+  async login(accountName: string, password: string): Promise<{
+    success: boolean;
+    message?: string;
+    token?: string;
+    user?: {
+      accountName: string;
+      name: string;
+      role: string;
+    };
+  }> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          accountName: accountName.trim(),
+          password,
+        }),
+      });
+
+      const json = await res.json();
+      return json;
+    } catch (error) {
+      console.warn(`[API] Login error connecting to ${API_BASE_URL}/login:`, error);
+      return {
+        success: false,
+        message: 'Could not connect to authentication server. Please verify the backend is running.',
+      };
+    }
+  },
+
   // 1. Health Check
   async checkHealth(): Promise<boolean> {
     try {

@@ -5,6 +5,7 @@ import { LawvoxLogo } from './LawvoxLogo';
 import { MAIN_NAV_ITEMS, SYSTEM_NAV_ITEMS, CURRENT_USER } from '../../data/navigation';
 import { NavItemId } from '../../types/navigation';
 import { Scale, Sparkles } from 'lucide-react';
+import { AuthService } from '../../services/auth';
 
 interface SidebarProps {
   activeItem: NavItemId;
@@ -17,6 +18,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onNavigate,
   className = '',
 }) => {
+  const authUser = typeof window !== 'undefined' ? AuthService.getAuthUser() : null;
+  const displayName = authUser?.name || CURRENT_USER.name;
+  const displayRole = authUser?.role || CURRENT_USER.role;
+  const displayInitials = authUser?.initials || (authUser?.name ? authUser.name.charAt(0).toUpperCase() : CURRENT_USER.initials);
+
   const getBadgeStyle = (color?: string) => {
     switch (color) {
       case 'amber':
@@ -164,7 +170,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="flex items-center gap-3 p-2 rounded-lg bg-white border border-slate-200/60 shadow-xs">
           <div className="relative">
             <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-slate-900 to-blue-900 text-amber-400 flex items-center justify-center font-bold text-xs shadow-xs">
-              {CURRENT_USER.initials}
+              {displayInitials}
             </div>
             {CURRENT_USER.isOnline && (
               <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
@@ -172,10 +178,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
           <div className="min-w-0 flex-1">
             <h4 className="text-xs font-semibold text-slate-900 truncate">
-              {CURRENT_USER.name}
+              {displayName}
             </h4>
             <p className="text-[11px] text-slate-500 truncate">
-              {CURRENT_USER.role}
+              {displayRole}
             </p>
           </div>
         </div>
