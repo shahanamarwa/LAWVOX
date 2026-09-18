@@ -44,7 +44,7 @@ app.get("/api/cases", (_req, res) => {
 });
 
 // Search cases
-app.get("/api/cases/search", (req, res) => {
+app.get("/api/cases/:id", (req, res) => {
   try {
     const id = Number(req.params.id);
 
