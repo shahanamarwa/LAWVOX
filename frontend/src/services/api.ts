@@ -13,16 +13,20 @@ async function fetchJson<T>(
   options?: RequestInit
 ): Promise<T | null> {
   try {
+    const headers = new Headers(options?.headers);
+
+    if (!headers.has('Content-Type')) {
+      headers.set('Content-Type', 'application/json');
+    }
+
     const token = AuthService.getAuthToken();
-    const authHeader = token ? { Authorization: `Bearer ${token}` } : {};
+    if (token && !headers.has('Authorization')) {
+      headers.set('Authorization', `Bearer ${token}`);
+    }
 
     const res = await fetch(`${API_BASE_URL}${endpoint}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...authHeader,
-        ...(options?.headers || {}),
-      },
       ...options,
+      headers, // must come after ...options so it isn't overwritten
     });
 
     if (!res.ok) {
