@@ -127,4 +127,71 @@ export const LawvoxAPI = {
       return false;
     }
   },
+
+  // 5. Profile (Local Storage Implementation - Frontend Only)
+  async getProfile() {
+    try {
+      const stored = localStorage.getItem('lawvox_profile');
+      return stored
+        ? JSON.parse(stored)
+        : {
+            name: 'Advocate Aarav Sharma',
+            email: 'aarav@lawvox.in',
+            specialization: 'Constitutional Law',
+            yearsOfExperience: 8,
+            bio: 'Passionate advocate specializing in constitutional jurisprudence and public law.',
+            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Aarav',
+          };
+    } catch (error) {
+      console.warn('[API] Error reading profile from localStorage:', error);
+      return null;
+    }
+  },
+
+  // 6. Dashboard (Mock Data - Frontend Only)
+  async getDashboard() {
+    try {
+      const stored = localStorage.getItem('lawvox_dashboard');
+      return stored
+        ? JSON.parse(stored)
+        : {
+            recentCases: 3,
+            totalNotes: 0,
+            bookmarks: 0,
+            listeningHistory: 0,
+          };
+    } catch (error) {
+      console.warn('[API] Error reading dashboard from localStorage:', error);
+      return null;
+    }
+  },
+
+  // 7. Settings (Local Storage Implementation - Frontend Only)
+  async getSettings() {
+    try {
+      const stored = localStorage.getItem('lawvox_settings');
+      return stored
+        ? JSON.parse(stored)
+        : {
+            theme: 'light',
+            fontSize: 'medium',
+            notifications: true,
+            emailDigest: 'weekly',
+            language: 'en',
+          };
+    } catch (error) {
+      console.warn('[API] Error reading settings from localStorage:', error);
+      return null;
+    }
+  },
+
+  async updateSettings(settings: any) {
+    try {
+      localStorage.setItem('lawvox_settings', JSON.stringify(settings));
+      return true;
+    } catch (error) {
+      console.warn('[API] Error updating settings:', error);
+      return false;
+    }
+  },
 };
