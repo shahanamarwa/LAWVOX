@@ -20,6 +20,7 @@ app.get("/api/health", (_req, res) => {
     message: "LAWVOX backend is running",
   });
 });
+
 // Get all cases
 app.get("/api/cases", (_req, res) => {
   try {
@@ -41,7 +42,7 @@ app.get("/api/cases", (_req, res) => {
   }
 });
 
-// Search cases — MOVED HERE (BEFORE :id route)
+// Search cases — MUST BE BEFORE :id route
 app.get("/api/cases/search", (req, res) => {
   try {
     const query = String(req.query.q || "").trim();
@@ -81,7 +82,7 @@ app.get("/api/cases/search", (req, res) => {
   }
 });
 
-// Get case by ID — MOVED HERE (AFTER search route)
+// Get case by ID — AFTER search route
 app.get("/api/cases/:id", (req, res) => {
   try {
     const id = Number(req.params.id);
@@ -108,4 +109,15 @@ app.get("/api/cases/:id", (req, res) => {
       message: "Failed to fetch case",
     });
   }
+});
+
+// Root endpoint
+app.get("/", (_req, res) => {
+  res.json({
+    message: "Welcome to LAWVOX API",
+  });
+});
+
+app.listen(PORT, () => {
+  console.log(`LAWVOX backend running on port ${PORT}`);
 });
