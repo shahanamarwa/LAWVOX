@@ -195,20 +195,3 @@ export const LawvoxAPI = {
     }
   },
 };
-  // 8. Login (predefined account — verified on backend)
-  async login(accountName: string, password: string) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ accountName, password }),
-      });
-
-      const data = await res.json().catch(() => ({}));
-
-      return { ok: res.ok, status: res.status, data };
-    } catch (error) {
-      console.warn('[API] Login request failed:', error);
-      return { ok: false, status: 0, data: { success: false } };
-    }
-  },
