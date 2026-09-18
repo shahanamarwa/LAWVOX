@@ -20,7 +20,6 @@ app.get("/api/health", (_req, res) => {
     message: "LAWVOX backend is running",
   });
 });
-
 // Get all cases
 app.get("/api/cases", (_req, res) => {
   try {
@@ -35,7 +34,6 @@ app.get("/api/cases", (_req, res) => {
     });
   } catch (error) {
     console.error(error);
-
     res.status(500).json({
       success: false,
       message: "Failed to fetch cases",
@@ -43,37 +41,7 @@ app.get("/api/cases", (_req, res) => {
   }
 });
 
-// Search cases
-app.get("/api/cases/:id", (req, res) => {
-  try {
-    const id = Number(req.params.id);
-
-    const caseData = db
-      .prepare("SELECT * FROM cases WHERE id = ?")
-      .get(id);
-
-    if (!caseData) {
-      return res.status(404).json({
-        success: false,
-        message: "Case not found",
-      });
-    }
-
-    res.json({
-      success: true,
-      case: caseData,
-    });
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch case",
-    });
-  }
-});
-
-// Search cases
+// Search cases — MOVED HERE (BEFORE :id route)
 app.get("/api/cases/search", (req, res) => {
   try {
     const query = String(req.query.q || "").trim();
@@ -106,7 +74,6 @@ app.get("/api/cases/search", (req, res) => {
     });
   } catch (error) {
     console.error(error);
-
     res.status(500).json({
       success: false,
       message: "Search failed",
@@ -114,13 +81,31 @@ app.get("/api/cases/search", (req, res) => {
   }
 });
 
-// Root endpoint
-app.get("/", (_req, res) => {
-  res.json({
-    message: "Welcome to LAWVOX API",
-  });
-});
+// Get case by ID — MOVED HERE (AFTER search route)
+app.get("/api/cases/:id", (req, res) => {
+  try {
+    const id = Number(req.params.id);
 
-app.listen(PORT, () => {
-  console.log(`LAWVOX backend running on port ${PORT}`);
+    const caseData = db
+      .prepare("SELECT * FROM cases WHERE id = ?")
+      .get(id);
+
+    if (!caseData) {
+      return res.status(404).json({
+        success: false,
+        message: "Case not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      case: caseData,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch case",
+    });
+  }
 });
