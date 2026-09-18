@@ -43,8 +43,8 @@ app.get("/api/cases", (_req, res) => {
   }
 });
 
-// Get one case
-app.get("/api/cases/:id", (req, res) => {
+// Search cases
+app.get("/api/cases/search", (req, res) => {
   try {
     const id = Number(req.params.id);
 
