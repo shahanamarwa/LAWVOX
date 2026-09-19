@@ -5,8 +5,13 @@
 
 import { AuthService } from './auth';
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const RAW_API_URL = (
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+).trim();
+const CLEAN_BASE = RAW_API_URL.replace(/\/+$/, '');
+const API_BASE_URL = CLEAN_BASE.endsWith('/api')
+  ? CLEAN_BASE
+  : `${CLEAN_BASE}/api`;
 
 async function fetchJson<T>(
   endpoint: string,
