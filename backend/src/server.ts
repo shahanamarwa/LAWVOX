@@ -14,12 +14,31 @@ app.use(express.json());
 
 const PORT = Number(process.env.PORT) || 5000;
 
+// Safe secret cleanup for environment variables (handles accidental quotes/spaces)
+function cleanSecret(val?: string): string {
+  if (!val) return "";
+  let s = val.trim();
+  if ((s.startsWith('"') && s.endsWith('"')) || (s.startsWith("'") && s.endsWith("'"))) {
+    s = s.slice(1, -1);
+  }
+  return s;
+}
+
+// Constant-time comparison using SHA-256 digests
+function safeCompare(a: string, b: string): boolean {
+  if (!a || !b) return false;
+  const hashA = crypto.createHash("sha256").update(a).digest();
+  const hashB = crypto.createHash("sha256").update(b).digest();
+  return crypto.timingSafeEqual(hashA, hashB);
+}
+
 // Predefined account credential verification
 function verifyCredentials(accountInput: string, passwordInput: string): boolean {
   const expectedAccount = (process.env.AUTH_ACCOUNT_NAME || "lakshmi").trim();
-  const expectedPassword = process.env.AUTH_PASSWORD || process.env.ADMIN_PASSWORD;
+  const rawExpectedPassword = process.env.AUTH_PASSWORD || process.env.ADMIN_PASSWORD || "";
+  const cleanedExpectedPassword = cleanSecret(rawExpectedPassword);
 
-  if (!accountInput || !passwordInput || !expectedPassword) {
+  if (!accountInput || !passwordInput || !cleanedExpectedPassword) {
     return false;
   }
 
@@ -28,11 +47,12 @@ function verifyCredentials(accountInput: string, passwordInput: string): boolean
     return false;
   }
 
-  // Constant-time comparison using SHA-256 digests
-  const inputHash = crypto.createHash("sha256").update(passwordInput).digest();
-  const expectedHash = crypto.createHash("sha256").update(expectedPassword).digest();
-
-  return crypto.timingSafeEqual(inputHash, expectedHash);
+  // Compare against raw, cleaned (trimmed/unquoted), or trimmed input
+  return (
+    safeCompare(passwordInput, rawExpectedPassword) ||
+    safeCompare(passwordInput, cleanedExpectedPassword) ||
+    safeCompare(passwordInput.trim(), cleanedExpectedPassword)
+  );
 }
 
 // Generate signed authentication token
@@ -85,11 +105,16 @@ function verifyAuthToken(token: string): { valid: boolean; accountName?: string 
   }
 }
 
-// Health check
-app.get("/api/health", (_req, res) => {
+// Health check with safe environment diagnosis (no secrets or values revealed)
+app.get(["/api/health", "/health"], (_req, res) => {
   res.json({
     success: true,
     message: "LAWVOX backend is running",
+    envDiagnosis: {
+      AUTH_ACCOUNT_NAME_CONFIGURED: Boolean(process.env.AUTH_ACCOUNT_NAME),
+      AUTH_PASSWORD_CONFIGURED: Boolean(process.env.AUTH_PASSWORD || process.env.ADMIN_PASSWORD),
+      AUTH_SECRET_CONFIGURED: Boolean(process.env.AUTH_SECRET),
+    },
   });
 });
 
@@ -183,14 +208,26 @@ app.get("/api/cases/:id", (req, res) => {
   }
 });
 
-// Login endpoint (Predefined account authentication)
-app.post("/api/login", (req, res) => {
+// Login endpoint (Predefined account authentication) - supports both /api/login and /login
+app.post(["/api/login", "/login"], (req, res) => {
   try {
     const { accountName, username, password } = req.body || {};
     const inputAccount = (accountName || username || "").toString().trim();
     const inputPassword = (password || "").toString();
 
+    const hasPasswordConfigured = Boolean(process.env.AUTH_PASSWORD || process.env.ADMIN_PASSWORD);
+    console.log(`[Auth Diagnostic] Received login request for account "${inputAccount}". AUTH_PASSWORD configured: ${hasPasswordConfigured}`);
+
     if (!inputAccount || !inputPassword) {
+      console.warn(`[Auth Diagnostic] Login rejected: Missing accountName or password in request body.`);
+      return res.status(401).json({
+        success: false,
+        message: "Invalid account name or password",
+      });
+    }
+
+    if (!hasPasswordConfigured) {
+      console.error(`[Auth Diagnostic] CRITICAL: AUTH_PASSWORD (or ADMIN_PASSWORD) is NOT available in environment variables. All logins will fail until this variable is linked and available to the service.`);
       return res.status(401).json({
         success: false,
         message: "Invalid account name or password",
@@ -200,12 +237,14 @@ app.post("/api/login", (req, res) => {
     const isValid = verifyCredentials(inputAccount, inputPassword);
 
     if (!isValid) {
+      console.warn(`[Auth Diagnostic] Login rejected: Credentials mismatch for account "${inputAccount}".`);
       return res.status(401).json({
         success: false,
         message: "Invalid account name or password",
       });
     }
 
+    console.log(`[Auth Diagnostic] Login SUCCESSFUL for account "${inputAccount}".`);
     const token = generateAuthToken(inputAccount);
 
     return res.json({
@@ -227,8 +266,8 @@ app.post("/api/login", (req, res) => {
   }
 });
 
-// Current user session verification endpoint
-app.get("/api/auth/me", (req, res) => {
+// Current user session verification endpoint - supports both /api/auth/me and /auth/me
+app.get(["/api/auth/me", "/auth/me"], (req, res) => {
   const authHeader = req.headers.authorization;
   const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
 
